@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  neo4j:
+    image: neo4j:5.24-community
+    container_name: neo4j-community
+    ports:
+      - "7474:7474"  # HTTP interface (Neo4j Browser)
+      - "7687:7687"  # Bolt protocol (for Python driver)
+    environment:
+      - NEO4J_AUTH=neo4j/neo4jpassword
+      - NEO4J_dbms_memory_heap_initial__size=512m
+      - NEO4J_dbms_memory_heap_max__size=1g
+      - NEO4JLABS_PLUGINS=["apoc"]  # Enable APOC for vector search
+    volumes:
+      - ./neo4j-data:/data
+      - ./neo4j-logs:/logs
+      - ./neo4j-plugins:/plugins
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7474"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# volumes:
+#   neo4j-data:
+#   neo4j-logs:
+#   neo4j-plugins:
