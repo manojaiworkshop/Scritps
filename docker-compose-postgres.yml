@@ -1,35 +1,69 @@
-version: '3.8'
+version: '3.9'
 
 services:
   postgres:
     image: postgres:15
-    container_name: postgres
+    container_name: my_postgres
+    restart: always
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin123
       POSTGRES_DB: mydb
-    volumes:
-      - ./postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    networks:
-      - pgnetwork
+    volumes:
+      - ./postgres-workflow:/var/lib/postgresql/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "3m"
+        max-file: "3"
+
+  redis:
+    image: redis:7
+    container_name: my_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ~/docker-volumes/redis-data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "3m"
+        max-file: "3"
 
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: pgadmin
+    container_name: my_pgadmin
+    restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_EMAIL: admin@mail.com
       PGADMIN_DEFAULT_PASSWORD: admin123
     ports:
       - "5050:80"
-    depends_on:
-      - postgres
-    networks:
-      - pgnetwork
+    volumes:
+      - pgadmin-data1:/var/lib/pgadmin
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "3m"
+        max-file: "3"
 
-# volumes:
-#   postgres_data:
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    container_name: my_redisinsight
+    restart: always
+    ports:
+      - "127.0.0.1:5540:5540"
+    environment:
+      - RIPORT=5540
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "3m"
+        max-file: "3"
 
-networks:
-  pgnetwork:
+volumes:
+  pgadmin-data1:
