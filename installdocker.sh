@@ -49,7 +49,8 @@ docker --version
 
 # Test Docker with a hello-world container
 echo "Running a test container..."
-docker run hello-world
+sudo docker run hello-world
 
 echo "Docker installation completed successfully!"
-echo "Please log out and log back in to apply the Docker group changes, or run 'newgrp docker' in this terminal."
+echo "Please log out and log back in to apply the Docker group changes."
+echo "After logging back in, you can run Docker commands without sudo."
